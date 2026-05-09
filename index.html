@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Wortschatz Trainer</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Spectral:ital,wght@0,400;0,500;1,400&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body,#root{height:100%;width:100%}
+  body{font-family:'Spectral',Georgia,serif;background:#0f0d0c;color:#f0e6d3;overscroll-behavior:none}
+  h1,h2,h3,.de{font-family:'Cormorant Garant',Georgia,serif}
+  .app{max-width:460px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;background:#0f0d0c}
+  .view{flex:1;padding:20px 16px 90px;overflow-y:auto}
+  .logo{font-size:2rem;font-weight:700;line-height:1;color:#f0e6d3}
+  .logo span{color:#d4a017}
+  .logo-sub{font-size:.68rem;color:#5a4a3a;letter-spacing:.12em;text-transform:uppercase;margin-top:3px}
+  .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:18px 0}
+  .stat{background:#1a1614;border:1px solid #2a2220;border-radius:12px;padding:12px 6px;text-align:center}
+  .stat-n{font-family:'Cormorant Garant',serif;font-size:1.8rem;font-weight:700;color:#d4a017;line-height:1}
+  .stat-l{font-size:.62rem;color:#6a5a4a;text-transform:uppercase;letter-spacing:.07em;margin-top:3px}
+  .ac{background:#1a1614;border:1px solid #2e2a26;border-radius:14px;padding:14px;cursor:pointer;width:100%;text-align:left;margin-bottom:9px;display:flex;align-items:center;gap:12px;transition:border-color .2s,background .2s}
+  .ac:hover{border-color:rgba(212,160,23,.5);background:#201c18}
+  .ac:disabled{opacity:.4;cursor:not-allowed}
+  .ac-icon{font-size:1.4rem;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#0f0d0c;border-radius:9px;flex-shrink:0}
+  .ac-label{font-family:'Cormorant Garant',serif;font-size:1.05rem;font-weight:600;color:#f0e6d3}
+  .ac-desc{font-size:.72rem;color:#6a5a4a;margin-top:1px}
+  .ac.gold{border-color:rgba(212,160,23,.3)}
+  .ac.gold .ac-icon{background:rgba(212,160,23,.12)}
+  .gen-msg{font-size:.75rem;color:#d4a017;text-align:center;padding:8px;animation:pulse 1.5s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  nav.bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:460px;background:#0c0a09;border-top:1px solid #2a2220;display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom,0)}
+  .nb{flex:1;padding:10px 4px 8px;background:none;border:none;color:#4a3a2a;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.58rem;text-transform:uppercase;letter-spacing:.07em;transition:color .2s;font-family:'Spectral',serif}
+  .nb.active{color:#d4a017}
+  .nb-ic{font-size:1.15rem}
+  .sec-title{font-family:'Cormorant Garant',serif;font-size:1.25rem;font-weight:700;color:#f0e6d3;margin-bottom:14px}
+  textarea{width:100%;background:#1a1614;border:1px solid #2e2a26;border-radius:11px;color:#f0e6d3;font-family:'Spectral',serif;font-size:.88rem;padding:13px;line-height:1.6;resize:vertical;min-height:160px;outline:none}
+  textarea:focus{border-color:rgba(212,160,23,.5)}
+  .hint{font-size:.7rem;color:#5a4a3a;margin-top:6px;line-height:1.6}
+  .prev-item{display:flex;align-items:center;gap:8px;padding:8px 11px;background:#1a1614;border-radius:8px;margin-bottom:5px;font-size:.85rem}
+  .art-badge{font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:.04em;flex-shrink:0}
+  .prev-de{font-family:'Cormorant Garant',serif;font-size:.98rem;font-weight:600}
+  .prev-en{color:#6a5a4a;font-size:.78rem}
+  .btn{display:block;width:100%;padding:13px;border-radius:11px;border:none;font-family:'Spectral',serif;font-size:.88rem;cursor:pointer;letter-spacing:.04em;transition:all .15s;margin-top:9px}
+  .btn-gold{background:linear-gradient(135deg,#d4a017,#b8861a);color:#0f0d0c;font-weight:600}
+  .btn-gold:hover{transform:translateY(-1px);box-shadow:0 4px 18px rgba(212,160,23,.3)}
+  .btn-ghost{background:#1a1614;border:1px solid #2e2a26;color:#f0e6d3}
+  .btn-ghost:hover{border-color:rgba(212,160,23,.4)}
+  .btn:disabled{opacity:.35;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+  .prog{font-size:.72rem;color:#6a5a4a;text-align:center;margin-bottom:18px;letter-spacing:.05em}
+  .flip-wrap{perspective:1200px;width:100%;height:340px;cursor:pointer;margin-bottom:20px}
+  .flip-inner{position:relative;width:100%;height:100%;transition:transform .55s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d}
+  .flip-inner.flipped{transform:rotateY(180deg)}
+  .flip-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:18px;border:1px solid #2e2a26;overflow:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:24px}
+  .flip-front{background:linear-gradient(155deg,#1e1a16 0%,#161210 100%)}
+  .flip-back{background:linear-gradient(155deg,#161a12 0%,#0f1510 100%);transform:rotateY(180deg);justify-content:flex-start;padding-top:22px;overflow-y:auto;align-items:flex-start}
+  .card-art{font-family:'Cormorant Garant',serif;font-size:.85rem;font-weight:600;letter-spacing:.12em;margin-bottom:3px}
+  .card-word{font-family:'Cormorant Garant',serif;font-size:2.6rem;font-weight:700;text-align:center;line-height:1.1;color:#f0e6d3}
+  .card-kw{font-family:'Cormorant Garant',serif;font-size:.95rem;font-style:italic;color:#d4a017;margin-top:16px}
+  .card-tap{font-size:.68rem;color:#4a3a2a;margin-top:12px;letter-spacing:.1em}
+  .mn-row{display:flex;gap:9px;margin-bottom:9px;font-size:.82rem;line-height:1.55;width:100%}
+  .mn-ico{flex-shrink:0;font-size:.95rem;width:20px;margin-top:1px}
+  .mn-lbl{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:#7a6a5a;display:block;margin-bottom:1px;font-family:'Spectral',serif}
+  .mn-txt{color:#d0c4b0}
+  .kw-hi{color:#d4a017;font-weight:600}
+  .mean{font-family:'Cormorant Garant',serif;font-size:1.5rem;font-weight:600;color:#f0e6d3;margin-bottom:14px;text-align:center;width:100%}
+  .grade-row{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+  .gb{padding:10px 4px;border-radius:9px;border:1px solid;font-size:.68rem;font-family:'Spectral',serif;text-transform:uppercase;letter-spacing:.05em;cursor:pointer;transition:all .15s}
+  .gb:hover{transform:translateY(-1px)}
+  .g0{background:#2a0f0f;border-color:#8b2635;color:#ff7a8a}
+  .g1{background:#1a1a0a;border-color:#6b6b20;color:#c4c44a}
+  .g2{background:#0a1a0a;border-color:#2b6b2b;color:#4acb4a}
+  .g3{background:#0a1420;border-color:#2b4a8b;color:#4a8bff}
+  .word-grid{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+  .wchip{padding:5px 11px;border-radius:20px;border:1px solid #2e2a26;background:#1a1614;font-size:.82rem;cursor:pointer;font-family:'Cormorant Garant',serif;transition:all .15s;user-select:none}
+  .wchip.sel{border-color:#d4a017;background:rgba(212,160,23,.12);color:#d4a017}
+  .wchip:hover{border-color:rgba(212,160,23,.4)}
+  .story-box{background:#1a1614;border:1px solid #2e2a26;border-radius:13px;padding:18px;line-height:1.85;font-size:.9rem;color:#d0c4b0;font-style:italic;margin-top:14px}
+  .wr-item{background:#1a1614;border:1px solid #2e2a26;border-radius:9px;padding:11px 13px;margin-bottom:7px;display:flex;align-items:center;gap:9px}
+  .wr-de{font-family:'Cormorant Garant',serif;font-size:1rem;font-weight:600;color:#f0e6d3}
+  .wr-en{font-size:.75rem;color:#6a5a4a}
+  .wr-acts{margin-left:auto;display:flex;gap:6px;flex-shrink:0}
+  .mb{padding:3px 9px;border-radius:6px;font-size:.62rem;font-family:'Spectral',serif;cursor:pointer;transition:all .15s;border:1px solid}
+  .mb-g{background:none;border-color:#3a3020;color:#d4a017}
+  .mb-g:hover{background:rgba(212,160,23,.1)}
+  .mb-d{background:none;border-color:#3a1a1a;color:#ff6b6b}
+  .mb-d:hover{background:rgba(255,100,100,.1)}
+  .mn-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+  .div{border:none;border-top:1px solid #2a2220;margin:14px 0}
+  .modal-ov{position:fixed;inset:0;background:rgba(15,13,12,.88);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+  .modal{background:#1a1614;border:1px solid #3a3020;border-radius:17px;padding:26px;width:100%;max-width:360px}
+  .modal h2{font-family:'Cormorant Garant',serif;font-size:1.4rem;font-weight:700;margin-bottom:7px}
+  .modal p{font-size:.76rem;color:#7a6a5a;margin-bottom:14px;line-height:1.6}
+  input[type=password],input[type=text]{width:100%;background:#0f0d0c;border:1px solid #2e2a26;border-radius:8px;color:#f0e6d3;font-family:'Spectral',serif;font-size:.88rem;padding:10px 12px;outline:none}
+  input:focus{border-color:rgba(212,160,23,.5)}
+  .toast{position:fixed;top:18px;left:50%;transform:translateX(-50%);background:#221e16;border:1px solid rgba(212,160,23,.5);border-radius:8px;padding:9px 16px;font-size:.82rem;color:#d4a017;z-index:300;animation:toastIn .25s ease;white-space:nowrap;pointer-events:none}
+  @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(-8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+  .empty{text-align:center;color:#4a3a2a;padding:40px 0;font-size:.88rem}
+  .sel-info{font-size:.72rem;color:#d4a017;margin-bottom:11px}
+  .int-info{display:flex;justify-content:space-between;font-size:.68rem;color:#5a4a3a;margin-bottom:10px;flex-wrap:wrap;gap:4px}
+  .export-row{display:flex;gap:8px;margin-bottom:16px}
+  .export-row .btn{margin-top:0;flex:1;font-size:.75rem;padding:9px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+// ── SM-2 ──────────────────────────────────────────────────────────────────
+function sm2(card, grade) {
+  let { interval = 1, repetition = 0, ef = 2.5 } = card;
+  if (grade === 0) { repetition = 0; interval = 1; }
+  else {
+    if (repetition === 0) interval = 1;
+    else if (repetition === 1) interval = 6;
+    else interval = Math.round(interval * ef);
+    repetition += 1;
+    ef = Math.max(1.3, ef + 0.1 - (3 - grade) * (0.08 + (3 - grade) * 0.02));
+  }
+  const next = new Date();
+  next.setDate(next.getDate() + interval);
+  return { interval, repetition, ef, nextReview: next.toISOString() };
+}
+
+function nextLabel(card, g) {
+  const r = sm2(card, g);
+  if (r.interval === 1) return "1T";
+  if (r.interval < 7) return r.interval + "T";
+  if (r.interval < 30) return Math.round(r.interval / 7) + "W";
+  return Math.round(r.interval / 30) + "M";
+}
+
+// ── Parser ────────────────────────────────────────────────────────────────
+function parseWords(text) {
+  return text.split("\n").filter(l => l.trim()).map((line, i) => {
+    let article = "", de = "", en = "";
+    const am = line.match(/^(der|die|das)\s+(.+?)(?:\s*[-–|]\s*(.+))?$/i);
+    if (am) { article = am[1].toLowerCase(); de = am[2].trim(); en = (am[3] || "").trim(); }
+    else {
+      const dm = line.match(/^(.+?)[-–|](.+)$/);
+      if (dm) { de = dm[1].trim(); en = dm[2].trim(); }
+      else de = line.trim();
+    }
+    if (!de) return null;
+    return { id: Date.now() + "-" + i + "-" + Math.random().toString(36).slice(2), de, en, article, mnemonic: null, interval: 1, repetition: 0, ef: 2.5, nextReview: new Date().toISOString(), added: new Date().toISOString() };
+  }).filter(Boolean);
+}
+
+const GC = { der: "#4a9eff", die: "#ff6b8a", das: "#4ecb8d", "": "#888" };
+
+// ── App ───────────────────────────────────────────────────────────────────
+function App() {
+  const [apiKey, setApiKey]   = useState(() => localStorage.getItem("wt_key") || "");
+  const [keyInput, setKeyInput] = useState("");
+  const [showKey, setShowKey] = useState(false);
+  const [words, setWords]     = useState(() => { try { return JSON.parse(localStorage.getItem("wt_words") || "[]"); } catch { return []; } });
+  const [view, setView]       = useState("home");
+  const [wordInput, setWordInput] = useState("");
+  const [preview, setPreview] = useState([]);
+  const [queue, setQueue]     = useState([]);
+  const [qIdx, setQIdx]       = useState(0);
+  const [flipped, setFlipped] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [genMsg, setGenMsg]   = useState("");
+  const [selStory, setSelStory] = useState([]);
+  const [story, setStory]     = useState("");
+  const [storyBusy, setStoryBusy] = useState(false);
+  const [toast, setToast]     = useState("");
+
+  useEffect(() => { localStorage.setItem("wt_words", JSON.stringify(words)); }, [words]);
+
+  const notify = (m) => { setToast(m); setTimeout(() => setToast(""), 3000); };
+
+  const saveKey = () => {
+    localStorage.setItem("wt_key", keyInput);
+    setApiKey(keyInput);
+    setShowKey(false);
+    notify("API-Schlüssel gespeichert ✓");
+  };
+
+  const callClaude = async (system, userMsg, maxTokens = 600) => {
+    const r = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+      body: JSON.stringify({ model: "claude-haiku-4-5-20251001", max_tokens: maxTokens, system, messages: [{ role: "user", content: userMsg }] })
+    });
+    const d = await r.json();
+    if (d.error) throw new Error(d.error.message);
+    return d.content[0].text;
+  };
+
+  const genMnemonic = async (word) => {
+    const sys = `You are a mnemonic expert for German vocabulary. Respond ONLY with valid JSON (no markdown fences, no preamble). Schema: {"keyword":"English phonetic sound-alike","image":"One absurd vivid scene (1 sentence) linking keyword to the meaning","genderHook":"One clever trick to remember the article (${word.article || "N/A"})","breakdown":"Etymology or root in 1 sentence","example":"One short natural German sentence using the word"}`;
+    const txt = await callClaude(sys, `German: ${word.article ? word.article + " " : ""}${word.de}\nMeaning: ${word.en || "please determine"}`);
+    return JSON.parse(txt.replace(/```json|```/g, "").trim());
+  };
+
+  const generateOne = async (id) => {
+    if (!apiKey) { setShowKey(true); return; }
+    setGenerating(true);
+    try {
+      const w = words.find(x => x.id === id);
+      setGenMsg("Generiere: " + w.de + "…");
+      const m = await genMnemonic(w);
+      setWords(p => p.map(x => x.id === id ? { ...x, mnemonic: m } : x));
+      notify(`Mnemonic für "${w.de}" ✓`);
+    } catch (e) { notify("Fehler: " + e.message); }
+    setGenerating(false); setGenMsg("");
+  };
+
+  const generateAll = async () => {
+    const missing = words.filter(w => !w.mnemonic);
+    if (!missing.length) { notify("Alle Wörter haben Mnemonics!"); return; }
+    if (!apiKey) { setShowKey(true); return; }
+    setGenerating(true);
+    for (let i = 0; i < missing.length; i++) {
+      try {
+        setGenMsg((i + 1) + "/" + missing.length + ": " + missing[i].de);
+        const m = await genMnemonic(missing[i]);
+        setWords(p => p.map(x => x.id === missing[i].id ? { ...x, mnemonic: m } : x));
+        await new Promise(r => setTimeout(r, 350));
+      } catch (e) { console.error(e); }
+    }
+    setGenerating(false); setGenMsg(""); notify("Alle Mnemonics generiert! ✓");
+  };
+
+  const startStudy = () => {
+    const due = words.filter(w => new Date(w.nextReview) <= new Date());
+    if (!due.length) { notify("Keine fälligen Karten!"); return; }
+    setQueue([...due]); setQIdx(0); setFlipped(false); setView("study");
+  };
+
+  const grade = (g) => {
+    const card = queue[qIdx];
+    setWords(p => p.map(w => w.id === card.id ? { ...w, ...sm2(card, g) } : w));
+    if (qIdx + 1 >= queue.length) { notify("Sitzung abgeschlossen! 🎉"); setView("home"); }
+    else { setQIdx(i => i + 1); setFlipped(false); }
+  };
+
+  const addWords = () => {
+    if (!preview.length) return;
+    setWords(p => [...p, ...preview]);
+    notify(preview.length + " Wörter hinzugefügt!");
+    setWordInput(""); setPreview([]); setView("home");
+  };
+
+  const exportJSON = () => {
+    const blob = new Blob([JSON.stringify(words, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "wortschatz_backup.json";
+    a.click();
+  };
+
+  const importJSON = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const imported = JSON.parse(ev.target.result);
+        setWords(p => {
+          const ids = new Set(p.map(w => w.id));
+          const newOnes = imported.filter(w => !ids.has(w.id));
+          notify(newOnes.length + " Wörter importiert!");
+          return [...p, ...newOnes];
+        });
+      } catch { notify("Import fehlgeschlagen."); }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
+
+  const genStory = async () => {
+    if (selStory.length < 2) { notify("Mindestens 2 Wörter wählen"); return; }
+    if (!apiKey) { setShowKey(true); return; }
+    setStoryBusy(true);
+    try {
+      const list = selStory.map(w => (w.article ? w.article + " " : "") + w.de + " (" + (w.en || "?") + ")").join(", ");
+      const sys = "You create absurdly vivid memory stories for German vocabulary learners. Write a 3–5 sentence story in English that chains ALL listed words into one memorable narrative. EVERY time a German word appears, wrap it in **double asterisks**. Make it slightly strange or funny — surprising imagery sticks. Return ONLY the story, no preamble.";
+      const txt = await callClaude(sys, "Chain these words: " + list, 500);
+      setStory(txt);
+    } catch (e) { notify("Fehler: " + e.message); }
+    setStoryBusy(false);
+  };
+
+  const renderStory = (text) =>
+    text.split(/\*\*(.+?)\*\*/g).map((p, i) =>
+      i % 2 === 1
+        ? <mark key={i} style={{ background: "rgba(212,160,23,.15)", color: "#d4a017", borderBottom: "1px solid rgba(212,160,23,.5)", borderRadius: 2, padding: "0 3px" }}>{p}</mark>
+        : p
+    );
+
+  const due = words.filter(w => new Date(w.nextReview) <= new Date());
+  const card = queue[qIdx];
+
+  // ── Home ──────────────────────────────────────────────────────────────
+  function HomeView() {
+    return (
+      <div className="view">
+        <div style={{ marginBottom: 18 }}>
+          <div className="logo">Wortschatz<span>.</span></div>
+          <div className="logo-sub">Deutsches Vokabular Training</div>
+        </div>
+        <div className="stat-row">
+          {[["📚", words.length, "Wörter"], [due.length > 0 ? "🔴" : "✅", due.length, "Fällig"],
+            ["🧠", words.filter(w => w.mnemonic).length, "Mnemonics"], ["🏆", words.filter(w => w.interval >= 21).length, "Gemeistert"]].map(([ic, n, l]) => (
+            <div className="stat" key={l}>
+              <div style={{ fontSize: ".9rem", marginBottom: 3 }}>{ic}</div>
+              <div className="stat-n" style={{ color: l === "Fällig" && n > 0 ? "#ff6b8a" : "#d4a017" }}>{n}</div>
+              <div className="stat-l">{l}</div>
+            </div>
+          ))}
+        </div>
+        <button className="ac gold" onClick={startStudy} disabled={due.length === 0}>
+          <div className="ac-icon">📖</div>
+          <div><div className="ac-label">Lernsitzung starten</div><div className="ac-desc">{due.length} Karte{due.length !== 1 ? "n" : ""} fällig heute</div></div>
+        </button>
+        <button className="ac" onClick={generateAll} disabled={generating || words.filter(w => !w.mnemonic).length === 0}>
+          <div className="ac-icon">🔮</div>
+          <div><div className="ac-label">Alle Mnemonics generieren</div><div className="ac-desc">{words.filter(w => !w.mnemonic).length} Wörter ohne Mnemonic · Claude Haiku</div></div>
+        </button>
+        {genMsg && <div className="gen-msg">{genMsg}</div>}
+        <button className="ac" onClick={() => { setSelStory([]); setStory(""); setView("story"); }}>
+          <div className="ac-icon">📜</div>
+          <div><div className="ac-label">Story-Modus</div><div className="ac-desc">Wörter zu Geschichten verknüpfen</div></div>
+        </button>
+        <button className="ac" onClick={() => setShowKey(true)}>
+          <div className="ac-icon">🗝️</div>
+          <div><div className="ac-label">API-Schlüssel</div><div className="ac-desc">{apiKey ? "Gespeichert · Claude Haiku" : "Nicht konfiguriert — hier klicken"}</div></div>
+        </button>
+      </div>
+    );
+  }
+
+  // ── Add ───────────────────────────────────────────────────────────────
+  function AddView() {
+    return (
+      <div className="view">
+        <div className="sec-title">Wörter hinzufügen</div>
+        <textarea
+          value={wordInput}
+          onChange={e => { setWordInput(e.target.value); setPreview(parseWords(e.target.value)); }}
+          placeholder={"der Hund - dog\ndie Katze - cat\ndas Haus - house\nFallschirm - parachute\ndie Geborgenheit - safety\n…"}
+        />
+        <p className="hint">
+          Formate: <b>der Hund - dog</b> · <b>Baum - tree</b> · <b>die Lampe – lamp</b><br />
+          Jedes Wort auf einer neuen Zeile. Artikel werden automatisch erkannt.
+        </p>
+        {preview.length > 0 && <>
+          <hr className="div" />
+          <div className="sec-title" style={{ fontSize: ".88rem", marginBottom: 10 }}>Vorschau · {preview.length} Wörter</div>
+          {preview.slice(0, 12).map((w, i) => (
+            <div key={i} className="prev-item">
+              {w.article && <span className="art-badge" style={{ background: GC[w.article] + "28", color: GC[w.article] }}>{w.article}</span>}
+              <span className="prev-de">{w.de}</span>
+              {w.en && <span className="prev-en">— {w.en}</span>}
+            </div>
+          ))}
+          {preview.length > 12 && <div style={{ fontSize: ".72rem", color: "#5a4a3a", padding: "4px 12px" }}>+{preview.length - 12} weitere…</div>}
+          <button className="btn btn-gold" onClick={addWords}>{preview.length} Wörter hinzufügen</button>
+        </>}
+        <hr className="div" />
+        <div style={{ fontSize: ".78rem", color: "#6a5a4a", marginBottom: 8 }}>Backup & Import</div>
+        <div className="export-row">
+          <button className="btn btn-ghost" onClick={exportJSON} disabled={!words.length}>⬇ Exportieren</button>
+          <label className="btn btn-ghost" style={{ textAlign: "center", marginTop: 0, cursor: "pointer" }}>
+            ⬆ Importieren
+            <input type="file" accept=".json" onChange={importJSON} style={{ display: "none" }} />
+          </label>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Study ─────────────────────────────────────────────────────────────
+  function StudyView() {
+    if (!card) return <div className="view"><div className="empty">Keine Karten. Geh zurück zum Heim.</div></div>;
+    const m = card.mnemonic;
+    return (
+      <div className="view">
+        <div className="prog">Karte {qIdx + 1} / {queue.length} · Wiederholung #{card.repetition}</div>
+        <div className="flip-wrap" onClick={() => setFlipped(f => !f)}>
+          <div className={"flip-inner" + (flipped ? " flipped" : "")}>
+            <div className="flip-face flip-front">
+              {card.article && <div className="card-art" style={{ color: GC[card.article] }}>{card.article}</div>}
+              <div className="card-word">{card.de}</div>
+              {m && <div className="card-kw">„{m.keyword}"</div>}
+              <div className="card-tap">— tippen zum Umdrehen —</div>
+            </div>
+            <div className="flip-face flip-back">
+              <div className="mean">{card.en || "—"}</div>
+              {m ? <>
+                <div className="mn-row"><span className="mn-ico">🔑</span><div><span className="mn-lbl">Schlüsselwort</span><span className="mn-txt"><span className="kw-hi">„{m.keyword}"</span></span></div></div>
+                <div className="mn-row"><span className="mn-ico">🖼</span><div><span className="mn-lbl">Merkbild</span><span className="mn-txt">{m.image}</span></div></div>
+                {card.article && m.genderHook && <div className="mn-row"><span className="mn-ico">⚧</span><div><span className="mn-lbl" style={{ color: GC[card.article] }}>Genus — {card.article}</span><span className="mn-txt">{m.genderHook}</span></div></div>}
+                {m.breakdown && <div className="mn-row"><span className="mn-ico">🔬</span><div><span className="mn-lbl">Etymologie</span><span className="mn-txt">{m.breakdown}</span></div></div>}
+                {m.example && <div className="mn-row"><span className="mn-ico">💬</span><div><span className="mn-lbl">Beispiel</span><span className="mn-txt" style={{ fontStyle: "italic" }}>{m.example}</span></div></div>}
+              </> : <div style={{ color: "#4a3a2a", fontSize: ".82rem", textAlign: "center", padding: "12px 0" }}>Kein Mnemonic. Unter „Wörter" generieren.</div>}
+            </div>
+          </div>
+        </div>
+        {flipped && <>
+          <div className="int-info">
+            <span>Nächste Wiederholung:</span>
+            <span>Wieder: 1T · Schwer: {nextLabel(card,1)} · Gut: {nextLabel(card,2)} · Leicht: {nextLabel(card,3)}</span>
+          </div>
+          <div className="grade-row">
+            {[["Wieder",0,"g0"],["Schwer",1,"g1"],["Gut",2,"g2"],["Leicht",3,"g3"]].map(([l,g,c]) => (
+              <button key={g} className={"gb " + c} onClick={() => grade(g)}>{l}</button>
+            ))}
+          </div>
+        </>}
+      </div>
+    );
+  }
+
+  // ── Story ─────────────────────────────────────────────────────────────
+  function StoryView() {
+    return (
+      <div className="view">
+        <div className="sec-title">Story-Modus</div>
+        <p style={{ fontSize: ".78rem", color: "#7a6a5a", marginBottom: 14, lineHeight: 1.65 }}>
+          Wähle 2–8 Wörter. Claude verknüpft sie zu einer absurden, einprägsamen Geschichte — Surrealismus hilft beim Erinnern.
+        </p>
+        {!words.length
+          ? <div className="empty">Noch keine Wörter.</div>
+          : <>
+            <div className="word-grid">
+              {words.map(w => (
+                <div key={w.id} className={"wchip" + (selStory.find(s => s.id === w.id) ? " sel" : "")}
+                  onClick={() => setSelStory(p => p.find(s => s.id === w.id) ? p.filter(s => s.id !== w.id) : p.length < 8 ? [...p, w] : p)}>
+                  {w.article && <span style={{ color: GC[w.article], fontSize: ".62rem" }}>{w.article} </span>}{w.de}
+                </div>
+              ))}
+            </div>
+            {selStory.length > 0 && <div className="sel-info">{selStory.length} ausgewählt: {selStory.map(w => w.de).join(", ")}</div>}
+            <button className="btn btn-gold" onClick={genStory} disabled={storyBusy || selStory.length < 2}>
+              {storyBusy ? "Generiere…" : "Geschichte generieren ↗"}
+            </button>
+            {story && <div className="story-box">{renderStory(story)}</div>}
+          </>}
+      </div>
+    );
+  }
+
+  // ── Words ─────────────────────────────────────────────────────────────
+  function WordsView() {
+    return (
+      <div className="view">
+        <div className="sec-title">Wortliste · {words.length}</div>
+        {!words.length
+          ? <div className="empty">Noch keine Wörter. Füge welche hinzu!</div>
+          : words.map(w => (
+            <div key={w.id} className="wr-item">
+              <div className="mn-dot" style={{ background: w.mnemonic ? "#4ecb8d" : "#2a1a1a" }} title={w.mnemonic ? "Mnemonic vorhanden" : "Kein Mnemonic"} />
+              {w.article && <span style={{ fontSize: ".62rem", fontWeight: 700, color: GC[w.article], width: 24, flexShrink: 0 }}>{w.article}</span>}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="wr-de">{w.de}</div>
+                {w.en && <div className="wr-en">{w.en}</div>}
+              </div>
+              <div className="wr-acts">
+                {!w.mnemonic && <button className="mb mb-g" onClick={() => generateOne(w.id)} disabled={generating}>Gen</button>}
+                <button className="mb mb-d" onClick={() => setWords(p => p.filter(x => x.id !== w.id))}>✕</button>
+              </div>
+            </div>
+          ))}
+      </div>
+    );
+  }
+
+  // ── Render ────────────────────────────────────────────────────────────
+  return (
+    <div className="app">
+      {toast && <div className="toast">{toast}</div>}
+
+      {showKey && (
+        <div className="modal-ov" onClick={() => setShowKey(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <h2>API-Schlüssel</h2>
+            <p>Dein Anthropic API-Schlüssel wird lokal in deinem Browser gespeichert (localStorage). Er wird nur für Mnemonic- &amp; Story-Generierung verwendet — Claude Haiku, sehr günstig (~$0.001 pro Wort).</p>
+            <input type="password" placeholder="sk-ant-…" value={keyInput} onChange={e => setKeyInput(e.target.value)} onKeyDown={e => e.key === "Enter" && saveKey()} autoFocus />
+            <button className="btn btn-gold" style={{ marginTop: 14 }} onClick={saveKey} disabled={!keyInput.startsWith("sk-")}>Speichern</button>
+            <button className="btn btn-ghost" style={{ marginTop: 8 }} onClick={() => setShowKey(false)}>Abbrechen</button>
+          </div>
+        </div>
+      )}
+
+      {view === "home"  && <HomeView />}
+      {view === "add"   && <AddView />}
+      {view === "study" && <StudyView />}
+      {view === "story" && <StoryView />}
+      {view === "words" && <WordsView />}
+
+      <nav className="bar">
+        {[["home","🏛","Heim"],["add","✚","Hinzuf."],["study","📖","Lernen"],["story","📜","Story"],["words","📋","Wörter"]].map(([id,ic,lb]) => (
+          <button key={id} className={"nb" + (view === id ? " active" : "")} onClick={() => id === "study" ? startStudy() : setView(id)}>
+            <span className="nb-ic">{ic}</span>{lb}
+          </button>
+        ))}
+      </nav>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
