@@ -30,6 +30,8 @@
   .ac-desc{font-size:.72rem;color:#6a5a4a;margin-top:1px}
   .ac.gold{border-color:rgba(212,160,23,.3)}
   .ac.gold .ac-icon{background:rgba(212,160,23,.12)}
+  .ac.green{border-color:rgba(78,203,141,.3)}
+  .ac.green .ac-icon{background:rgba(78,203,141,.1)}
   .gen-msg{font-size:.75rem;color:#d4a017;text-align:center;padding:8px;animation:pulse 1.5s infinite}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
   nav.bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:460px;background:#0c0a09;border-top:1px solid #2a2220;display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom,0)}
@@ -47,8 +49,11 @@
   .btn{display:block;width:100%;padding:13px;border-radius:11px;border:none;font-family:'Spectral',serif;font-size:.88rem;cursor:pointer;letter-spacing:.04em;transition:all .15s;margin-top:9px}
   .btn-gold{background:linear-gradient(135deg,#d4a017,#b8861a);color:#0f0d0c;font-weight:600}
   .btn-gold:hover{transform:translateY(-1px);box-shadow:0 4px 18px rgba(212,160,23,.3)}
+  .btn-green{background:linear-gradient(135deg,#4ecb8d,#35a06d);color:#0f0d0c;font-weight:600}
+  .btn-green:hover{transform:translateY(-1px);box-shadow:0 4px 18px rgba(78,203,141,.3)}
   .btn-ghost{background:#1a1614;border:1px solid #2e2a26;color:#f0e6d3}
   .btn-ghost:hover{border-color:rgba(212,160,23,.4)}
+  .btn-danger{background:#2a0f0f;border:1px solid #8b2635;color:#ff7a8a}
   .btn:disabled{opacity:.35;cursor:not-allowed;transform:none!important;box-shadow:none!important}
   .prog{font-size:.72rem;color:#6a5a4a;text-align:center;margin-bottom:18px;letter-spacing:.05em}
   .flip-wrap{perspective:1200px;width:100%;height:340px;cursor:pointer;margin-bottom:20px}
@@ -58,7 +63,7 @@
   .flip-front{background:linear-gradient(155deg,#1e1a16 0%,#161210 100%)}
   .flip-back{background:linear-gradient(155deg,#161a12 0%,#0f1510 100%);transform:rotateY(180deg);justify-content:flex-start;padding-top:22px;overflow-y:auto;align-items:flex-start}
   .card-art{font-family:'Cormorant Garant',serif;font-size:.85rem;font-weight:600;letter-spacing:.12em;margin-bottom:3px}
-  .card-word{font-family:'Cormorant Garant',serif;font-size:2.6rem;font-weight:700;text-align:center;line-height:1.1;color:#f0e6d3}
+  .card-word{font-family:'Cormorant Garant',serif;font-size:2.4rem;font-weight:700;text-align:center;line-height:1.1;color:#f0e6d3}
   .card-kw{font-family:'Cormorant Garant',serif;font-size:.95rem;font-style:italic;color:#d4a017;margin-top:16px}
   .card-tap{font-size:.68rem;color:#4a3a2a;margin-top:12px;letter-spacing:.1em}
   .mn-row{display:flex;gap:9px;margin-bottom:9px;font-size:.82rem;line-height:1.55;width:100%}
@@ -100,18 +105,31 @@
   @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(-8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
   .empty{text-align:center;color:#4a3a2a;padding:40px 0;font-size:.88rem}
   .sel-info{font-size:.72rem;color:#d4a017;margin-bottom:11px}
-  .int-info{display:flex;justify-content:space-between;font-size:.68rem;color:#5a4a3a;margin-bottom:10px;flex-wrap:wrap;gap:4px}
-  .export-row{display:flex;gap:8px;margin-bottom:16px}
+  .int-info{font-size:.68rem;color:#5a4a3a;margin-bottom:10px;line-height:1.6}
+  .export-row{display:flex;gap:8px;margin-bottom:6px}
   .export-row .btn{margin-top:0;flex:1;font-size:.75rem;padding:9px}
+  .filter-row{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+  .filter-chip{padding:4px 12px;border-radius:20px;border:1px solid #2e2a26;background:#1a1614;font-size:.72rem;cursor:pointer;transition:all .15s;font-family:'Spectral',serif;color:#8a7a6a}
+  .filter-chip.active{border-color:#d4a017;background:rgba(212,160,23,.12);color:#d4a017}
+  .search-box{width:100%;background:#1a1614;border:1px solid #2e2a26;border-radius:9px;color:#f0e6d3;font-family:'Spectral',serif;font-size:.88rem;padding:9px 12px;outline:none;margin-bottom:12px}
+  .search-box:focus{border-color:rgba(212,160,23,.5)}
+  .confirm-box{background:#1a1614;border:1px solid #8b2635;border-radius:13px;padding:16px;margin-bottom:12px;font-size:.82rem;line-height:1.6;color:#d0c4b0}
+  .confirm-row{display:flex;gap:8px}
+  .confirm-row .btn{margin-top:0;flex:1;padding:10px;font-size:.78rem}
+  .tag{display:inline-block;font-size:.6rem;padding:1px 6px;border-radius:4px;margin-left:6px;font-family:'Spectral',serif;vertical-align:middle}
+  .tag-idiom{background:rgba(212,160,23,.15);color:#d4a017;border:1px solid rgba(212,160,23,.3)}
 </style>
 </head>
 <body>
 <div id="root"></div>
 
-<script type="text/babel">
-const { useState, useEffect } = React;
+<script>
+const DEFAULT_WORDS = [{"de":"Voraussetzung","en":"prerequisite, requirement","article":"die"},{"de":"übrigens","en":"btw","article":""},{"de":"verlangen","en":"to demand, require","article":""},{"de":"umfassend","en":"comprehensive","article":""},{"de":"Einfluss","en":"influence","article":"der"},{"de":"verraten","en":"to reveal, betray","article":""},{"de":"erheblich","en":"considerable, significant","article":""},{"de":"fördern","en":"to promote, support","article":""},{"de":"fordern","en":"to demand","article":""},{"de":"Betrachtung","en":"observation, consideration","article":"die"},{"de":"ergreifen","en":"to seize, take action","article":""},{"de":"zutreffen","en":"to apply, be accurate","article":""},{"de":"bewältigen","en":"to cope with, manage","article":""},{"de":"Erkenntnis","en":"insight, realization","article":"die"},{"de":"entwerfen","en":"to design, draft","article":""},{"de":"grundsätzlich","en":"in principle, fundamentally","article":""},{"de":"sich lohnen","en":"to be worth it","article":""},{"de":"Umgang","en":"handling, dealings","article":"der"},{"de":"durchführen","en":"to carry out, implement","article":""},{"de":"vorwiegend","en":"predominantly","article":""},{"de":"verknüpfen","en":"to link, connect","article":""},{"de":"Herausforderung","en":"challenge","article":"die"},{"de":"einheitlich","en":"uniform, consistent","article":""},{"de":"anstreben","en":"to strive for, aim at","article":""},{"de":"Ansicht","en":"view, opinion","article":"die"},{"de":"ausdrücklich","en":"explicitly, expressly","article":""},{"de":"entstehen","en":"to arise, emerge","article":""},{"de":"erfassen","en":"to grasp, capture, record","article":""},{"de":"Zweck","en":"purpose, aim","article":"der"},{"de":"berücksichtigen","en":"to consider, take into account","article":""},{"de":"nachweisen","en":"to prove, demonstrate","article":""},{"de":"Bereich","en":"area, field, sector","article":"der"},{"de":"begründen","en":"to justify, establish","article":""},{"de":"umfangreich","en":"extensive, comprehensive","article":""},{"de":"Vorteil","en":"advantage","article":"der"},{"de":"einbeziehen","en":"to include, involve","article":""},{"de":"erfordern","en":"to require, demand","article":""},{"de":"Anteil","en":"share, portion","article":"der"},{"de":"betonen","en":"to emphasize, stress","article":""},{"de":"Auswirkung","en":"effect, impact","article":"die"},{"de":"bewirken","en":"to bring about, cause","article":""},{"de":"entscheidend","en":"decisive, crucial","article":""},{"de":"Erfahrung","en":"experience","article":"die"},{"de":"zugänglich","en":"accessible","article":""},{"de":"Ablauf","en":"process, sequence, procedure","article":"der"},{"de":"gestalten","en":"to shape, design, organize","article":""},{"de":"Zustimmung","en":"approval, consent","article":"die"},{"de":"ermöglichen","en":"to enable, make possible","article":""},{"de":"zunehmend","en":"increasingly","article":""},{"de":"abwägen","en":"to weigh up, consider carefully","article":""},{"de":"Zusammenhang","en":"context, connection","article":"der"},{"de":"sich auswirken","en":"to have an effect on","article":""},{"de":"Maßnahme","en":"measure, step","article":"die"},{"de":"einführen","en":"to introduce","article":""},{"de":"Begründung","en":"justification, reasoning","article":"die"},{"de":"Darstellung","en":"presentation, representation","article":"die"},{"de":"feststellen","en":"to establish, determine, note","article":""},{"de":"Aufwand","en":"effort, expenditure","article":"der"},{"de":"sich befinden","en":"to be located, be situated","article":""},{"de":"entschließen","en":"to decide, resolve","article":""},{"de":"Verfahren","en":"procedure, process, method","article":"das"},{"de":"geeignet","en":"suitable, appropriate","article":""},{"de":"teilnehmen","en":"to participate","article":""},{"de":"Beurteilung","en":"assessment, evaluation","article":"die"},{"de":"hierzu","en":"in this regard, for this purpose","article":""},{"de":"bewerten","en":"to evaluate, assess","article":""},{"de":"Vermutung","en":"assumption, suspicion","article":"die"},{"de":"eingehen auf","en":"to address, respond to","article":""},{"de":"herkömmlich","en":"conventional, traditional","article":""},{"de":"Vergleich","en":"comparison","article":"der"},{"de":"Widerspruch","en":"contradiction, objection","article":"der"},{"de":"überwiegen","en":"to predominate, outweigh","article":""},{"de":"Ansicht vertreten","en":"to hold the view","article":"die"},{"de":"ausschließen","en":"to exclude, rule out","article":""},{"de":"Verfügung","en":"disposal, decree","article":"die"},{"de":"erörtern","en":"to discuss, examine","article":""},{"de":"letztendlich","en":"ultimately, in the end","article":""},{"de":"vertiefen","en":"to deepen","article":""},{"de":"Annahme","en":"assumption","article":"die"},{"de":"zukünftig","en":"future","article":""},{"de":"sich beteiligen","en":"to participate, be involved","article":""},{"de":"Fortschritt","en":"progress","article":"der"},{"de":"beseitigen","en":"to eliminate, remove","article":""},{"de":"Einschränkung","en":"restriction, limitation","article":"die"},{"de":"hinreichend","en":"sufficient, adequate","article":""},{"de":"abgesehen von","en":"apart from, aside from","article":""},{"de":"sich eignen","en":"to be suitable, be appropriate","article":""},{"de":"Nutzen","en":"benefit, use, utility","article":"der"},{"de":"erweitern","en":"to expand, extend","article":""},{"de":"Verantwortung","en":"responsibility","article":"die"},{"de":"nachträglich","en":"subsequent, retrospective","article":""},{"de":"veranlassen","en":"to cause, prompt, arrange","article":""},{"de":"vermitteln","en":"to convey, mediate, teach","article":""},{"de":"entsprechend","en":"corresponding, accordingly","article":""},{"de":"bewahren","en":"to preserve, maintain, protect","article":""},{"de":"zugrunde liegen","en":"to underlie, be the basis of","article":""},{"de":"Bewusstsein","en":"consciousness, awareness","article":"das"},{"de":"einrichten","en":"to set up, establish, furnish","article":""},{"de":"Wandel","en":"change, transformation","article":"der"},{"de":"vorrangig","en":"primary, of priority","article":""},{"de":"auseinander setzen mit","en":"to engage with, deal with","article":""},{"de":"veröffentlichen","en":"to publish","article":""},{"de":"sich ergeben","en":"to result, arise","article":""},{"de":"Beitrag","en":"contribution","article":"der"},{"de":"beabsichtigen","en":"to intend","article":""},{"de":"vorliegen","en":"to be present, exist, be available","article":""},{"de":"ausweiten","en":"to expand, extend","article":""},{"de":"auslösen","en":"to trigger, cause","article":""},{"de":"bezüglich","en":"regarding, concerning","article":""},{"de":"ausschlaggebend","en":"decisive, determining","article":""},{"de":"Tatsache","en":"fact","article":"die"},{"de":"sich beziehen auf","en":"to refer to, relate to","article":""},{"de":"hervorheben","en":"to highlight, emphasize","article":""},{"de":"nachhaltig","en":"sustainable","article":""},{"de":"verfügen über","en":"to have at one's disposal, possess","article":""},{"de":"absehen von","en":"to disregard, refrain from","article":""},{"de":"durchsetzen","en":"to enforce, push through","article":""},{"de":"Durchführung","en":"implementation, execution","article":"die"},{"de":"bereitstellen","en":"to provide, make available","article":""},{"de":"ergeben","en":"to result in, yield","article":""},{"de":"darstellen","en":"to represent, depict, portray","article":""},{"de":"beanspruchen","en":"to claim, demand, require","article":""},{"de":"gewährleisten","en":"to ensure, guarantee","article":""},{"de":"Übertragung","en":"transfer, transmission","article":"die"},{"de":"Einigung","en":"agreement","article":"die"},{"de":"beteiligen","en":"to involve","article":""},{"de":"Grundlage","en":"basis, foundation","article":"die"},{"de":"wesentlich","en":"essential, significant","article":""},{"de":"infolgedessen","en":"consequently, as a result","article":""},{"de":"abgrenzen","en":"to delimit, distinguish","article":""},{"de":"umsetzen","en":"to implement, put into practice","article":""},{"de":"nachvollziehen","en":"to understand, follow, trace","article":""},{"de":"Anspruch","en":"claim, demand, standard","article":"der"},{"de":"ausstatten","en":"to equip, provide with","article":""},{"de":"hinsichtlich","en":"regarding, with respect to","article":""},{"de":"Erweiterung","en":"expansion, extension","article":"die"},{"de":"begrenzen","en":"to limit","article":""},{"de":"Schätzung","en":"estimate, estimation","article":"die"},{"de":"vermerken","en":"to note, record","article":""},{"de":"beantragen","en":"to apply for, request","article":""},{"de":"sich anschließen","en":"to join, follow, agree","article":""},{"de":"nachholen","en":"to catch up, make up for","article":""},{"de":"angemessen","en":"appropriate, adequate","article":""},{"de":"belegen","en":"to demonstrate, occupy, prove","article":""},{"de":"anerkennen","en":"to recognize, acknowledge","article":""},{"de":"sich einstellen auf","en":"to prepare for, adjust to","article":""},{"de":"annehmen","en":"to accept, assume","article":""},{"de":"Folge","en":"consequence, result","article":"die"},{"de":"Abweichung","en":"deviation, discrepancy","article":"die"},{"de":"Bestand","en":"stock, inventory, existing state","article":"der"},{"de":"Anpassung","en":"adaptation, adjustment","article":"die"},{"de":"Rahmen","en":"framework, frame","article":"der"},{"de":"zuweisen","en":"to assign, allocate","article":""},{"de":"bestimmen","en":"to determine, decide","article":""},{"de":"Aspekt","en":"aspect","article":"der"},{"de":"entspringen","en":"to originate from, spring from","article":""},{"de":"im Hinblick auf","en":"with regard to","article":""},{"de":"Anforderung","en":"requirement, demand","article":"die"},{"de":"nachvollziehbar","en":"comprehensible, understandable","article":""},{"de":"gewähren","en":"to grant, provide","article":""},{"de":"voraussichtlich","en":"presumably, expected","article":""},{"de":"Entstehung","en":"origin, development","article":"die"},{"de":"verdichten","en":"to compress, condense","article":""},{"de":"sich wenden an","en":"to turn to, contact","article":""},{"de":"hingegen","en":"on the other hand, however","article":""},{"de":"Hintergrund","en":"background, context","article":"der"},{"de":"Umsetzung","en":"implementation","article":"die"},{"de":"einräumen","en":"to admit, grant, concede","article":""},{"de":"eingehen","en":"to go into, address, respond","article":""},{"de":"sich ergeben aus","en":"to result from","article":""},{"de":"auszeichnen","en":"to distinguish, award","article":""},{"de":"erhalten","en":"to receive, maintain, preserve","article":""},{"de":"Bedingung","en":"condition","article":"die"},{"de":"verpflichten","en":"to oblige, commit","article":""},{"de":"einhalten","en":"to comply with, keep, observe","article":""},{"de":"Gegensatz","en":"contrast, opposite","article":"der"},{"de":"Vielseitigkeit","en":"versatility, diversity","article":"die"},{"de":"anpassen","en":"to adapt, adjust","article":""},{"de":"sich herausstellen","en":"to turn out, emerge","article":""},{"de":"Schwerpunkt","en":"focus, priority, emphasis","article":"der"},{"de":"deutlich","en":"clear, distinct","article":""},{"de":"sich beschränken auf","en":"to limit oneself to","article":""},{"de":"Ausnahme","en":"exception","article":"die"},{"de":"Einhaltung","en":"compliance, observance","article":"die"},{"de":"sich widmen","en":"to dedicate oneself to","article":""},{"de":"vertreten","en":"to represent","article":""},{"de":"Vorgehen","en":"approach, procedure","article":"das"},{"de":"sich gliedern","en":"to be structured, be divided","article":""},{"de":"erforderlich","en":"required, necessary","article":""},{"de":"Umfang","en":"scope, extent, volume","article":"der"},{"de":"Verschiebung","en":"shift, postponement","article":"die"},{"de":"festhalten","en":"to hold on to, record, maintain","article":""},{"de":"sich orientieren an","en":"to orient oneself by, be guided by","article":""},{"de":"Sichtweise","en":"viewpoint, perspective","article":"die"},{"de":"aussagekräftig","en":"meaningful, informative, significant","article":""},{"de":"sich unterscheiden","en":"to differ, be different","article":""},{"de":"Entwicklung","en":"development","article":"die"},{"de":"Vereinbarung","en":"agreement, arrangement","article":"die"},{"de":"verrichten","en":"to perform, carry out","article":""},{"de":"klären","en":"to clarify","article":""},{"de":"Entwurf","en":"draft, design","article":"der"},{"de":"Überfluss","en":"abundance, surplus","article":"der"},{"de":"Abwehr","en":"defense, resistance","article":"die"},{"de":"Erschöpfung","en":"exhaustion","article":"die"},{"de":"Rückforderung","en":"reclaim, recovery of funds","article":"die"},{"de":"Überzeugung","en":"conviction, belief","article":"die"},{"de":"Absicherung","en":"safeguarding, backing","article":"die"},{"de":"anlässlich","en":"on the occasion of","article":""},{"de":"Sinn","en":"meaning, sense","article":"der"},{"de":"Verhältnis","en":"relationship, ratio, proportion","article":"das"},{"de":"Sicherheit","en":"security, safety, certainty","article":"die"},{"de":"Steuerung","en":"control, management","article":"die"},{"de":"Merkmal","en":"characteristic, feature","article":"das"},{"de":"Verschwendung","en":"waste, squandering","article":"die"},{"de":"Beschränkung","en":"restriction, limitation","article":"die"},{"de":"Förderung","en":"promotion, support, funding","article":"die"},{"de":"Einleitung","en":"introduction","article":"die"},{"de":"Anerkennung","en":"recognition, acknowledgement","article":"die"},{"de":"Berechnung","en":"calculation","article":"die"},{"de":"Sicherung","en":"securing, safeguarding, backup","article":"die"},{"de":"Gestaltung","en":"design, shaping","article":"die"},{"de":"Auswertung","en":"evaluation, analysis","article":"die"},{"de":"Umstand","en":"circumstance","article":"der"},{"de":"Anreiz","en":"incentive","article":"der"},{"de":"Verlust","en":"loss","article":"der"},{"de":"Teilnahme","en":"participation","article":"die"},{"de":"Ablehnung","en":"rejection","article":"die"},{"de":"Erhöhung","en":"increase","article":"die"},{"de":"Berücksichtigung","en":"consideration","article":"die"},{"de":"Vermeidung","en":"avoidance","article":"die"},{"de":"Bedeutung","en":"meaning, significance","article":"die"},{"de":"Genehmigung","en":"approval, permit","article":"die"},{"de":"Überprüfung","en":"review, verification, check","article":"die"},{"de":"Beteiligung","en":"participation, involvement","article":"die"},{"de":"Aufschub","en":"postponement, delay","article":"der"},{"de":"Erhalt","en":"preservation, receipt","article":"der"},{"de":"Übernahme","en":"takeover, adoption","article":"die"},{"de":"Risiko","en":"risk","article":"das"},{"de":"das A und O sein","en":"to be the be-all and end-all","article":""},{"de":"auf den Punkt bringen","en":"to get to the point","article":""},{"de":"eine Rolle spielen","en":"to play a role","article":""},{"de":"einen Fehler eingestehen","en":"to admit a mistake","article":""},{"de":"auf die Probe stellen","en":"to put to the test","article":""},{"de":"ins Auge fassen","en":"to consider, have in mind","article":""},{"de":"in Kauf nehmen","en":"to accept, put up with","article":""},{"de":"mit etwas rechnen","en":"to expect something, count on it","article":""},{"de":"unter den Teppich kehren","en":"to sweep under the rug","article":""},{"de":"die Nase vorn haben","en":"to have the edge, be ahead","article":""},{"de":"Hand in Hand gehen","en":"to go hand in hand","article":""},{"de":"ein Auge haben auf","en":"to keep an eye on","article":""},{"de":"etwas auf die Beine stellen","en":"to get something off the ground","article":""},{"de":"den Nagel auf den Kopf treffen","en":"to hit the nail on the head","article":""},{"de":"etwas unter Dach und Fach bringen","en":"to finalize, wrap up","article":""},{"de":"auf Herz und Nieren prüfen","en":"to scrutinize thoroughly","article":""},{"de":"öfter mal etwas Neues wagen","en":"to dare to try something new","article":""},{"de":"den Kürzeren ziehen","en":"to come off worse, lose out","article":""},{"de":"auf der sicheren Seite sein","en":"to be on the safe side","article":""},{"de":"sich in die Höhle des Löwen begeben","en":"to enter the lion's den","article":""},{"de":"etwas auf die lange Bank schieben","en":"to put something off, procrastinate","article":""},{"de":"jemandem den Wind aus den Segeln nehmen","en":"to take the wind out of someone's sails","article":""},{"de":"eine Änderung bewirken","en":"to bring about a change","article":""},{"de":"etwas in den Griff bekommen","en":"to get something under control","article":""},{"de":"die Weichen stellen für","en":"to set the course for, pave the way","article":""},{"de":"einen Beitrag leisten zu","en":"to make a contribution to","article":""},{"de":"alles auf eine Karte setzen","en":"to put all eggs in one basket","article":""},{"de":"die Zeichen der Zeit erkennen","en":"to read the signs of the times","article":""},{"de":"sich an die eigene Nase fassen","en":"to look at oneself critically","article":""},{"de":"aus dem Nähkästchen plaudern","en":"to spill the beans, share secrets","article":""},{"de":"jemandem etwas in die Schuhe schieben","en":"to pin the blame on someone","article":""},{"de":"sich auf etwas gefasst machen","en":"to brace oneself for something","article":""},{"de":"mit der Tür ins Haus fallen","en":"to come straight to the point, be blunt","article":""},{"de":"in die Bresche springen","en":"to step into the breach","article":""},{"de":"die Spreu vom Weizen trennen","en":"to separate the wheat from the chaff","article":""},{"de":"sein Licht nicht unter den Scheffel stellen","en":"not to hide one's light under a bushel","article":""},{"de":"sich die Karten nicht legen lassen","en":"not to be dictated to","article":""},{"de":"von der Hand in den Mund leben","en":"to live from hand to mouth","article":""},{"de":"mit allen Wassern gewaschen sein","en":"to be crafty, a seasoned operator","article":""},{"de":"einen Schritt weiter sein","en":"to be one step ahead","article":""},{"de":"sein Herz ausschütten","en":"to pour one's heart out","article":""},{"de":"niemandem etwas schuldig bleiben","en":"to always have a comeback, give as good as one gets","article":""},{"de":"sich auf dünnem Eis bewegen","en":"to be on thin ice","article":""},{"de":"auf den Zahn fühlen","en":"to put someone through their paces","article":""},{"de":"zwei Fliegen mit einer Klappe schlagen","en":"to kill two birds with one stone","article":""},{"de":"mit dem Kopf durch die Wand wollen","en":"to be pigheaded, force one's way through","article":""},{"de":"vor etwas die Augen verschließen","en":"to turn a blind eye to something","article":""},{"de":"über den Tellerrand schauen","en":"to think outside the box","article":""},{"de":"den Bock zum Gärtner machen","en":"to set a fox to guard the henhouse","article":""},{"de":"jemandem einen Strich durch die Rechnung machen","en":"to foil someone's plans","article":""},{"de":"sich mit jemandem gut stellen","en":"to get on good terms with someone","article":""},{"de":"ins Schwarze treffen","en":"to hit the bullseye","article":""},{"de":"mit etwas hinterm Berg halten","en":"to keep something secret","article":""},{"de":"das Spiel mit offenen Karten spielen","en":"to play with an open hand, be transparent","article":""},{"de":"jemanden auf die Palme bringen","en":"to drive someone up the wall","article":""},{"de":"keine halben Sachen machen","en":"to not do things by halves","article":""},{"de":"aus einer Mücke einen Elefanten machen","en":"to make a mountain out of a molehill","article":""},{"de":"etwas aus dem Effeff beherrschen","en":"to know something inside out","article":""},{"de":"sich etwas nicht entgehen lassen","en":"to not miss something","article":""},{"de":"sich in Acht nehmen vor","en":"to watch out for, beware of","article":""},{"de":"jemandem reinen Wein einschenken","en":"to tell someone the plain truth","article":""},{"de":"den Teufel an die Wand malen","en":"to imagine the worst, be pessimistic","article":""},{"de":"einen Korb bekommen","en":"to be turned down, get rejected","article":""},{"de":"jemanden auf dem falschen Fuß erwischen","en":"to catch someone off guard","article":""},{"de":"mit offenen Armen empfangen","en":"to welcome with open arms","article":""},{"de":"den Überblick verlieren","en":"to lose track, lose the overview","article":""},{"de":"es läuft wie am Schnürchen","en":"it's going like clockwork","article":""},{"de":"jemandem etwas unter die Nase reiben","en":"to rub someone's nose in something","article":""},{"de":"sich durchbeißen müssen","en":"to grit one's teeth and push through","article":""},{"de":"das Kind beim Schopf packen","en":"to seize the opportunity","article":""},{"de":"der Ton macht die Musik","en":"it's not what you say but how you say it","article":""},{"de":"ins kalte Wasser springen","en":"to jump in at the deep end","article":""},{"de":"jemandem einen Denkzettel verpassen","en":"to teach someone a lesson","article":""},{"de":"eine schlafende Katze wecken","en":"to let sleeping dogs lie (doing the opposite)","article":""},{"de":"jemanden über den Tisch ziehen","en":"to take someone for a ride","article":""},{"de":"sich wie ein Fisch im Wasser fühlen","en":"to feel completely at home","article":""},{"de":"in aller Munde sein","en":"to be on everyone's lips","article":""},{"de":"die Daumen drücken","en":"to keep one's fingers crossed","article":""},{"de":"den Kopf in den Sand stecken","en":"to bury one's head in the sand","article":""},{"de":"etwas auf dem Kasten haben","en":"to have what it takes, be smart","article":""},{"de":"eine Extrameile gehen","en":"to go the extra mile","article":""},{"de":"das Handtuch werfen","en":"to throw in the towel","article":""},{"de":"sich ins Zeug legen","en":"to put in effort, give one's all","article":""},{"de":"etwas an den Nagel hängen","en":"to hang something up, quit","article":""},{"de":"auf's Ganze gehen","en":"to go all out","article":""},{"de":"kein Blatt vor den Mund nehmen","en":"to not mince words, speak frankly","article":""},{"de":"auf dem Holzweg sein","en":"to be on the wrong track","article":""},{"de":"den Faden verlieren","en":"to lose the thread","article":""},{"de":"aus dem Rahmen fallen","en":"to stand out, be out of the ordinary","article":""},{"de":"mit der Zeit gehen","en":"to move with the times","article":""},{"de":"in die Fußstapfen treten","en":"to follow in someone's footsteps","article":""},{"de":"das Rad nicht neu erfinden","en":"not to reinvent the wheel","article":""},{"de":"den Ball ins Rollen bringen","en":"to get the ball rolling","article":""},{"de":"unter vier Augen sprechen","en":"to speak in private","article":""},{"de":"sich den Mund fusselig reden","en":"to talk until one is blue in the face","article":""},{"de":"mit offenen Karten spielen","en":"to play with an open hand, be transparent","article":""},{"de":"etwas aufs Spiel setzen","en":"to put something at stake","article":""},{"de":"die Zähne zusammenbeißen","en":"to grit one's teeth, persevere","article":""},{"de":"ein heißes Eisen anfassen","en":"to tackle a difficult issue","article":""}];
+</script>
 
-// ── SM-2 ──────────────────────────────────────────────────────────────────
+<script type="text/babel">
+const { useState, useEffect, useMemo } = React;
+
 function sm2(card, grade) {
   let { interval = 1, repetition = 0, ef = 2.5 } = card;
   if (grade === 0) { repetition = 0; interval = 1; }
@@ -135,7 +153,6 @@ function nextLabel(card, g) {
   return Math.round(r.interval / 30) + "M";
 }
 
-// ── Parser ────────────────────────────────────────────────────────────────
 function parseWords(text) {
   return text.split("\n").filter(l => l.trim()).map((line, i) => {
     let article = "", de = "", en = "";
@@ -147,13 +164,17 @@ function parseWords(text) {
       else de = line.trim();
     }
     if (!de) return null;
-    return { id: Date.now() + "-" + i + "-" + Math.random().toString(36).slice(2), de, en, article, mnemonic: null, interval: 1, repetition: 0, ef: 2.5, nextReview: new Date().toISOString(), added: new Date().toISOString() };
+    return makeWord(de, en, article);
   }).filter(Boolean);
 }
 
-const GC = { der: "#4a9eff", die: "#ff6b8a", das: "#4ecb8d", "": "#888" };
+function makeWord(de, en, article) {
+  return { id: Date.now() + "-" + Math.random().toString(36).slice(2), de, en, article: article || "", mnemonic: null, interval: 1, repetition: 0, ef: 2.5, nextReview: new Date().toISOString(), added: new Date().toISOString() };
+}
 
-// ── App ───────────────────────────────────────────────────────────────────
+const GC = { der: "#4a9eff", die: "#ff6b8a", das: "#4ecb8d", "": "#888" };
+const isIdiom = (w) => !w.article && w.de.includes(" ");
+
 function App() {
   const [apiKey, setApiKey]   = useState(() => localStorage.getItem("wt_key") || "");
   const [keyInput, setKeyInput] = useState("");
@@ -171,6 +192,10 @@ function App() {
   const [story, setStory]     = useState("");
   const [storyBusy, setStoryBusy] = useState(false);
   const [toast, setToast]     = useState("");
+  const [showConfirmLoad, setShowConfirmLoad] = useState(false);
+  const [showConfirmClear, setShowConfirmClear] = useState(false);
+  const [wFilter, setWFilter] = useState("all");
+  const [wSearch, setWSearch] = useState("");
 
   useEffect(() => { localStorage.setItem("wt_words", JSON.stringify(words)); }, [words]);
 
@@ -195,7 +220,10 @@ function App() {
   };
 
   const genMnemonic = async (word) => {
-    const sys = `You are a mnemonic expert for German vocabulary. Respond ONLY with valid JSON (no markdown fences, no preamble). Schema: {"keyword":"English phonetic sound-alike","image":"One absurd vivid scene (1 sentence) linking keyword to the meaning","genderHook":"One clever trick to remember the article (${word.article || "N/A"})","breakdown":"Etymology or root in 1 sentence","example":"One short natural German sentence using the word"}`;
+    const isIdiomWord = isIdiom(word);
+    const sys = isIdiomWord
+      ? `You are a mnemonic expert for German idioms. Respond ONLY with valid JSON (no markdown). Schema: {"keyword":"A vivid English phrase or sound-alike","image":"One absurd memorable scene (1 sentence) that captures the idiom meaning","genderHook":"N/A","breakdown":"Literal word-for-word translation of the German idiom","example":"One natural German sentence using this idiom"}`
+      : `You are a mnemonic expert for German vocabulary. Respond ONLY with valid JSON (no markdown). Schema: {"keyword":"English phonetic sound-alike","image":"One absurd vivid scene (1 sentence) linking keyword to the meaning","genderHook":"One clever trick to remember the article (${word.article || "N/A"})","breakdown":"Etymology or root in 1 sentence","example":"One short natural German sentence using the word"}`;
     const txt = await callClaude(sys, `German: ${word.article ? word.article + " " : ""}${word.de}\nMeaning: ${word.en || "please determine"}`);
     return JSON.parse(txt.replace(/```json|```/g, "").trim());
   };
@@ -229,6 +257,16 @@ function App() {
     setGenerating(false); setGenMsg(""); notify("Alle Mnemonics generiert! ✓");
   };
 
+  const loadDefaultList = () => {
+    const existing = new Set(words.map(w => w.de.toLowerCase()));
+    const newWords = DEFAULT_WORDS
+      .filter(w => !existing.has(w.de.toLowerCase()))
+      .map(w => makeWord(w.de, w.en, w.article));
+    setWords(p => [...p, ...newWords]);
+    setShowConfirmLoad(false);
+    notify(newWords.length + " neue Wörter geladen! (" + DEFAULT_WORDS.length + " gesamt)");
+  };
+
   const startStudy = () => {
     const due = words.filter(w => new Date(w.nextReview) <= new Date());
     if (!due.length) { notify("Keine fälligen Karten!"); return; }
@@ -252,28 +290,19 @@ function App() {
   const exportJSON = () => {
     const blob = new Blob([JSON.stringify(words, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "wortschatz_backup.json";
-    a.click();
+    a.href = URL.createObjectURL(blob); a.download = "wortschatz_backup.json"; a.click();
   };
 
   const importJSON = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const file = e.target.files[0]; if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
       try {
-        const imported = JSON.parse(ev.target.result);
-        setWords(p => {
-          const ids = new Set(p.map(w => w.id));
-          const newOnes = imported.filter(w => !ids.has(w.id));
-          notify(newOnes.length + " Wörter importiert!");
-          return [...p, ...newOnes];
-        });
+        const imp = JSON.parse(ev.target.result);
+        setWords(p => { const ids = new Set(p.map(w => w.id)); const n = imp.filter(w => !ids.has(w.id)); notify(n.length + " Wörter importiert!"); return [...p, ...n]; });
       } catch { notify("Import fehlgeschlagen."); }
     };
-    reader.readAsText(file);
-    e.target.value = "";
+    reader.readAsText(file); e.target.value = "";
   };
 
   const genStory = async () => {
@@ -299,13 +328,23 @@ function App() {
   const due = words.filter(w => new Date(w.nextReview) <= new Date());
   const card = queue[qIdx];
 
-  // ── Home ──────────────────────────────────────────────────────────────
+  const filteredWords = useMemo(() => {
+    let w = [...words];
+    if (wFilter === "due") w = w.filter(x => new Date(x.nextReview) <= new Date());
+    else if (wFilter === "new") w = w.filter(x => x.repetition === 0);
+    else if (wFilter === "noMn") w = w.filter(x => !x.mnemonic);
+    else if (wFilter === "idiom") w = w.filter(x => isIdiom(x));
+    if (wSearch) w = w.filter(x => x.de.toLowerCase().includes(wSearch.toLowerCase()) || x.en.toLowerCase().includes(wSearch.toLowerCase()));
+    return w;
+  }, [words, wFilter, wSearch]);
+
   function HomeView() {
+    const defaultLoaded = DEFAULT_WORDS.every(d => words.some(w => w.de.toLowerCase() === d.de.toLowerCase()));
     return (
       <div className="view">
         <div style={{ marginBottom: 18 }}>
           <div className="logo">Wortschatz<span>.</span></div>
-          <div className="logo-sub">Deutsches Vokabular Training</div>
+          <div className="logo-sub">Deutsches Vokabular Training · B2→C1</div>
         </div>
         <div className="stat-row">
           {[["📚", words.length, "Wörter"], [due.length > 0 ? "🔴" : "✅", due.length, "Fällig"],
@@ -317,6 +356,17 @@ function App() {
             </div>
           ))}
         </div>
+
+        {!defaultLoaded && (
+          <button className="ac green" onClick={() => setShowConfirmLoad(true)}>
+            <div className="ac-icon">📦</div>
+            <div>
+              <div className="ac-label">Standardliste laden</div>
+              <div className="ac-desc">{DEFAULT_WORDS.length} Wörter · B2/C1 Akademisch + Redewendungen</div>
+            </div>
+          </button>
+        )}
+
         <button className="ac gold" onClick={startStudy} disabled={due.length === 0}>
           <div className="ac-icon">📖</div>
           <div><div className="ac-label">Lernsitzung starten</div><div className="ac-desc">{due.length} Karte{due.length !== 1 ? "n" : ""} fällig heute</div></div>
@@ -338,77 +388,75 @@ function App() {
     );
   }
 
-  // ── Add ───────────────────────────────────────────────────────────────
   function AddView() {
     return (
       <div className="view">
         <div className="sec-title">Wörter hinzufügen</div>
-        <textarea
-          value={wordInput}
-          onChange={e => { setWordInput(e.target.value); setPreview(parseWords(e.target.value)); }}
-          placeholder={"der Hund - dog\ndie Katze - cat\ndas Haus - house\nFallschirm - parachute\ndie Geborgenheit - safety\n…"}
-        />
-        <p className="hint">
-          Formate: <b>der Hund - dog</b> · <b>Baum - tree</b> · <b>die Lampe – lamp</b><br />
-          Jedes Wort auf einer neuen Zeile. Artikel werden automatisch erkannt.
-        </p>
+        <textarea value={wordInput} onChange={e => { setWordInput(e.target.value); setPreview(parseWords(e.target.value)); }}
+          placeholder={"der Hund - dog\ndie Katze - cat\ndas Haus - house\nFallschirm - parachute\n…"} />
+        <p className="hint">Formate: <b>der Hund - dog</b> · <b>Baum - tree</b> · Jedes Wort auf einer neuen Zeile.</p>
         {preview.length > 0 && <>
           <hr className="div" />
           <div className="sec-title" style={{ fontSize: ".88rem", marginBottom: 10 }}>Vorschau · {preview.length} Wörter</div>
-          {preview.slice(0, 12).map((w, i) => (
+          {preview.slice(0, 10).map((w, i) => (
             <div key={i} className="prev-item">
               {w.article && <span className="art-badge" style={{ background: GC[w.article] + "28", color: GC[w.article] }}>{w.article}</span>}
               <span className="prev-de">{w.de}</span>
               {w.en && <span className="prev-en">— {w.en}</span>}
             </div>
           ))}
-          {preview.length > 12 && <div style={{ fontSize: ".72rem", color: "#5a4a3a", padding: "4px 12px" }}>+{preview.length - 12} weitere…</div>}
+          {preview.length > 10 && <div style={{ fontSize: ".72rem", color: "#5a4a3a", padding: "4px 12px" }}>+{preview.length - 10} weitere…</div>}
           <button className="btn btn-gold" onClick={addWords}>{preview.length} Wörter hinzufügen</button>
         </>}
         <hr className="div" />
         <div style={{ fontSize: ".78rem", color: "#6a5a4a", marginBottom: 8 }}>Backup & Import</div>
         <div className="export-row">
-          <button className="btn btn-ghost" onClick={exportJSON} disabled={!words.length}>⬇ Exportieren</button>
+          <button className="btn btn-ghost" onClick={exportJSON} disabled={!words.length}>⬇ Export</button>
           <label className="btn btn-ghost" style={{ textAlign: "center", marginTop: 0, cursor: "pointer" }}>
-            ⬆ Importieren
-            <input type="file" accept=".json" onChange={importJSON} style={{ display: "none" }} />
+            ⬆ Import<input type="file" accept=".json" onChange={importJSON} style={{ display: "none" }} />
           </label>
         </div>
+        {words.length > 0 && <>
+          <hr className="div" />
+          <button className="btn btn-danger" onClick={() => setShowConfirmClear(true)}>⚠ Alle Wörter löschen</button>
+        </>}
       </div>
     );
   }
 
-  // ── Study ─────────────────────────────────────────────────────────────
   function StudyView() {
-    if (!card) return <div className="view"><div className="empty">Keine Karten. Geh zurück zum Heim.</div></div>;
+    if (!card) return <div className="view"><div className="empty">Keine Karten. Zurück zum Heim.</div></div>;
     const m = card.mnemonic;
+    const idiom = isIdiom(card);
     return (
       <div className="view">
-        <div className="prog">Karte {qIdx + 1} / {queue.length} · Wiederholung #{card.repetition}</div>
+        <div className="prog">
+          Karte {qIdx + 1} / {queue.length}
+          {idiom && <span className="tag tag-idiom">Redewendung</span>}
+        </div>
         <div className="flip-wrap" onClick={() => setFlipped(f => !f)}>
           <div className={"flip-inner" + (flipped ? " flipped" : "")}>
             <div className="flip-face flip-front">
               {card.article && <div className="card-art" style={{ color: GC[card.article] }}>{card.article}</div>}
-              <div className="card-word">{card.de}</div>
+              <div className="card-word" style={{ fontSize: idiom ? "1.3rem" : "2.4rem" }}>{card.de}</div>
               {m && <div className="card-kw">„{m.keyword}"</div>}
               <div className="card-tap">— tippen zum Umdrehen —</div>
             </div>
             <div className="flip-face flip-back">
-              <div className="mean">{card.en || "—"}</div>
+              <div className="mean" style={{ fontSize: "1.3rem" }}>{card.en || "—"}</div>
               {m ? <>
                 <div className="mn-row"><span className="mn-ico">🔑</span><div><span className="mn-lbl">Schlüsselwort</span><span className="mn-txt"><span className="kw-hi">„{m.keyword}"</span></span></div></div>
                 <div className="mn-row"><span className="mn-ico">🖼</span><div><span className="mn-lbl">Merkbild</span><span className="mn-txt">{m.image}</span></div></div>
-                {card.article && m.genderHook && <div className="mn-row"><span className="mn-ico">⚧</span><div><span className="mn-lbl" style={{ color: GC[card.article] }}>Genus — {card.article}</span><span className="mn-txt">{m.genderHook}</span></div></div>}
-                {m.breakdown && <div className="mn-row"><span className="mn-ico">🔬</span><div><span className="mn-lbl">Etymologie</span><span className="mn-txt">{m.breakdown}</span></div></div>}
+                {card.article && m.genderHook && m.genderHook !== "N/A" && <div className="mn-row"><span className="mn-ico">⚧</span><div><span className="mn-lbl" style={{ color: GC[card.article] }}>Genus — {card.article}</span><span className="mn-txt">{m.genderHook}</span></div></div>}
+                {m.breakdown && <div className="mn-row"><span className="mn-ico">🔬</span><div><span className="mn-lbl">{idiom ? "Wörtlich" : "Etymologie"}</span><span className="mn-txt">{m.breakdown}</span></div></div>}
                 {m.example && <div className="mn-row"><span className="mn-ico">💬</span><div><span className="mn-lbl">Beispiel</span><span className="mn-txt" style={{ fontStyle: "italic" }}>{m.example}</span></div></div>}
-              </> : <div style={{ color: "#4a3a2a", fontSize: ".82rem", textAlign: "center", padding: "12px 0" }}>Kein Mnemonic. Unter „Wörter" generieren.</div>}
+              </> : <div style={{ color: "#4a3a2a", fontSize: ".82rem", textAlign: "center", padding: "12px 0" }}>Kein Mnemonic. Unter „Wörter" → Gen.</div>}
             </div>
           </div>
         </div>
         {flipped && <>
           <div className="int-info">
-            <span>Nächste Wiederholung:</span>
-            <span>Wieder: 1T · Schwer: {nextLabel(card,1)} · Gut: {nextLabel(card,2)} · Leicht: {nextLabel(card,3)}</span>
+            Wieder: 1T · Schwer: {nextLabel(card,1)} · Gut: {nextLabel(card,2)} · Leicht: {nextLabel(card,3)}
           </div>
           <div className="grade-row">
             {[["Wieder",0,"g0"],["Schwer",1,"g1"],["Gut",2,"g2"],["Leicht",3,"g3"]].map(([l,g,c]) => (
@@ -420,48 +468,48 @@ function App() {
     );
   }
 
-  // ── Story ─────────────────────────────────────────────────────────────
   function StoryView() {
     return (
       <div className="view">
         <div className="sec-title">Story-Modus</div>
         <p style={{ fontSize: ".78rem", color: "#7a6a5a", marginBottom: 14, lineHeight: 1.65 }}>
-          Wähle 2–8 Wörter. Claude verknüpft sie zu einer absurden, einprägsamen Geschichte — Surrealismus hilft beim Erinnern.
+          Wähle 2–8 Wörter. Claude verknüpft sie zu einer absurden, einprägsamen Geschichte.
         </p>
-        {!words.length
-          ? <div className="empty">Noch keine Wörter.</div>
-          : <>
-            <div className="word-grid">
-              {words.map(w => (
-                <div key={w.id} className={"wchip" + (selStory.find(s => s.id === w.id) ? " sel" : "")}
-                  onClick={() => setSelStory(p => p.find(s => s.id === w.id) ? p.filter(s => s.id !== w.id) : p.length < 8 ? [...p, w] : p)}>
-                  {w.article && <span style={{ color: GC[w.article], fontSize: ".62rem" }}>{w.article} </span>}{w.de}
-                </div>
-              ))}
-            </div>
-            {selStory.length > 0 && <div className="sel-info">{selStory.length} ausgewählt: {selStory.map(w => w.de).join(", ")}</div>}
-            <button className="btn btn-gold" onClick={genStory} disabled={storyBusy || selStory.length < 2}>
-              {storyBusy ? "Generiere…" : "Geschichte generieren ↗"}
-            </button>
-            {story && <div className="story-box">{renderStory(story)}</div>}
-          </>}
+        {!words.length ? <div className="empty">Keine Wörter vorhanden.</div> : <>
+          <div className="word-grid">
+            {words.map(w => (
+              <div key={w.id} className={"wchip" + (selStory.find(s => s.id === w.id) ? " sel" : "")}
+                onClick={() => setSelStory(p => p.find(s => s.id === w.id) ? p.filter(s => s.id !== w.id) : p.length < 8 ? [...p, w] : p)}>
+                {w.article && <span style={{ color: GC[w.article], fontSize: ".62rem" }}>{w.article} </span>}{w.de}
+              </div>
+            ))}
+          </div>
+          {selStory.length > 0 && <div className="sel-info">{selStory.length} ausgewählt: {selStory.map(w => w.de).join(", ")}</div>}
+          <button className="btn btn-gold" onClick={genStory} disabled={storyBusy || selStory.length < 2}>{storyBusy ? "Generiere…" : "Geschichte generieren ↗"}</button>
+          {story && <div className="story-box">{renderStory(story)}</div>}
+        </>}
       </div>
     );
   }
 
-  // ── Words ─────────────────────────────────────────────────────────────
   function WordsView() {
+    const filterOpts = [["all","Alle"],["due","Fällig"],["new","Neu"],["noMn","Ohne Mnemonic"],["idiom","Redewendungen"]];
     return (
       <div className="view">
-        <div className="sec-title">Wortliste · {words.length}</div>
-        {!words.length
-          ? <div className="empty">Noch keine Wörter. Füge welche hinzu!</div>
-          : words.map(w => (
+        <div className="sec-title">Wortliste · {filteredWords.length} / {words.length}</div>
+        <input className="search-box" type="text" placeholder="Suchen…" value={wSearch} onChange={e => setWSearch(e.target.value)} />
+        <div className="filter-row">
+          {filterOpts.map(([k,l]) => (
+            <div key={k} className={"filter-chip" + (wFilter === k ? " active" : "")} onClick={() => setWFilter(k)}>{l}</div>
+          ))}
+        </div>
+        {!filteredWords.length ? <div className="empty">Keine Wörter gefunden.</div>
+          : filteredWords.map(w => (
             <div key={w.id} className="wr-item">
-              <div className="mn-dot" style={{ background: w.mnemonic ? "#4ecb8d" : "#2a1a1a" }} title={w.mnemonic ? "Mnemonic vorhanden" : "Kein Mnemonic"} />
+              <div className="mn-dot" style={{ background: w.mnemonic ? "#4ecb8d" : "#2a1a1a" }} />
               {w.article && <span style={{ fontSize: ".62rem", fontWeight: 700, color: GC[w.article], width: 24, flexShrink: 0 }}>{w.article}</span>}
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div className="wr-de">{w.de}</div>
+                <div className="wr-de">{w.de}{isIdiom(w) && <span className="tag tag-idiom">idiom</span>}</div>
                 {w.en && <div className="wr-en">{w.en}</div>}
               </div>
               <div className="wr-acts">
@@ -474,7 +522,6 @@ function App() {
     );
   }
 
-  // ── Render ────────────────────────────────────────────────────────────
   return (
     <div className="app">
       {toast && <div className="toast">{toast}</div>}
@@ -483,10 +530,40 @@ function App() {
         <div className="modal-ov" onClick={() => setShowKey(false)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
             <h2>API-Schlüssel</h2>
-            <p>Dein Anthropic API-Schlüssel wird lokal in deinem Browser gespeichert (localStorage). Er wird nur für Mnemonic- &amp; Story-Generierung verwendet — Claude Haiku, sehr günstig (~$0.001 pro Wort).</p>
+            <p>Gespeichert lokal in deinem Browser. Nur für Mnemonic- & Story-Generierung (Claude Haiku, ~$0.001 pro Wort).</p>
             <input type="password" placeholder="sk-ant-…" value={keyInput} onChange={e => setKeyInput(e.target.value)} onKeyDown={e => e.key === "Enter" && saveKey()} autoFocus />
             <button className="btn btn-gold" style={{ marginTop: 14 }} onClick={saveKey} disabled={!keyInput.startsWith("sk-")}>Speichern</button>
             <button className="btn btn-ghost" style={{ marginTop: 8 }} onClick={() => setShowKey(false)}>Abbrechen</button>
+          </div>
+        </div>
+      )}
+
+      {showConfirmLoad && (
+        <div className="modal-ov" onClick={() => setShowConfirmLoad(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <h2>Standardliste laden?</h2>
+            <p>{DEFAULT_WORDS.length} Wörter werden hinzugefügt:<br />
+            · {DEFAULT_WORDS.filter(w => !isIdiom(w) && !w.article).length} Verben & Adverbien<br />
+            · {DEFAULT_WORDS.filter(w => w.article).length} Substantive (mit Artikel)<br />
+            · {DEFAULT_WORDS.filter(w => isIdiom(w)).length} Redewendungen & Ausdrücke<br />
+            Bereits vorhandene Wörter werden übersprungen.</p>
+            <div className="confirm-row">
+              <button className="btn btn-green" onClick={loadDefaultList}>Laden</button>
+              <button className="btn btn-ghost" onClick={() => setShowConfirmLoad(false)}>Abbrechen</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showConfirmClear && (
+        <div className="modal-ov" onClick={() => setShowConfirmClear(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <h2>Alle Wörter löschen?</h2>
+            <p>Dies löscht alle {words.length} Wörter einschließlich aller Fortschritte und Mnemonics. Diese Aktion kann nicht rückgängig gemacht werden.</p>
+            <div className="confirm-row">
+              <button className="btn btn-danger" onClick={() => { setWords([]); setShowConfirmClear(false); notify("Alle Wörter gelöscht."); }}>Löschen</button>
+              <button className="btn btn-ghost" onClick={() => setShowConfirmClear(false)}>Abbrechen</button>
+            </div>
           </div>
         </div>
       )}
